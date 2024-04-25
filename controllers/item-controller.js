@@ -18,6 +18,44 @@ const allItems = async (_req, res) => {
     }
 }
 
+const postItem = async (req, res) => {
+    console.log(req.body)
+
+    const { type, colour, size, filename } = req.body;
+    const userId = "599e382f-dfec-469a-8ff5-342f5b2767b1"
+    if (!type || !colour || !size ) {
+        return res.status(400).json({
+            message: "Missing form input data"
+        });
+    }
+
+    try {
+        const result = await knex("items")
+            .insert({
+                type,
+                colour,
+                size,
+                "image": filename,
+                "user_id": userId,
+            })
+        
+        const [id] = result;
+
+        const newItem = await knex("items")
+            .where({ id })
+            .first();
+        
+        res.status(201).json(newItem);
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to add new item: ${error}`,
+        });
+    }
+    // res.send(req.body);
+
+}
+
 module.exports = {
-    allItems
+    allItems,
+    postItem,
 }

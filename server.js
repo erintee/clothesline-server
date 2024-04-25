@@ -1,18 +1,16 @@
 require('dotenv').config();
 const cors = require('cors');
-
+const multer = require('multer');
 const express = require('express');
 const app = express();
+const PORT = process.env.PORT || 8080;
 
 const itemRouter = require('./routes/item-routes');
 // const userRouter = require('./routes/user-routes');
 
-const PORT = process.env.PORT || 8080;
-
 app.use(cors());
 app.use(express.json());
-
-app.use(express.static('./public'));
+app.use(express.static('/uploads'));
 
 app.use('/api/items', itemRouter);
 // app.use('/api/users', userRouter);
