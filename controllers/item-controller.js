@@ -35,7 +35,7 @@ const postItem = async (req, res) => {
                 type,
                 colour,
                 size,
-                "image": filename,
+                "image": image,
                 "user_id": userId,
             })
         
