@@ -10,13 +10,13 @@ const allItems = async (_req, res) => {
                 "items.colour",
                 "items.size",
                 "items.image",
-                "users.name"            
+                "users.first_name"            
             )
             .join("users", "items.user_id", "=", "users.id");
 
         res.status(200).json(items);
     } catch (error) {
-        res.status(500).send("Error retrieving items:", error);
+        res.status(500).send(`Error retrieving items: ${error}`);
     }
 }
 
@@ -61,8 +61,6 @@ const searchItems = async (req, res) => {
     try {
         const query = req.query;
         console.log(query)
-        console.log(query.type)
-        console.log(typeof query.type)
         const items = await knex("items")
             .select(
                 "items.type",
@@ -70,22 +68,23 @@ const searchItems = async (req, res) => {
                 "items.colour",
                 "items.size",
                 "items.image",
-                // "users.name",
+                "users.first_name",
             )
-            .where(
-                {"items.type": query.type}
-            )
-            .orWhere(
-                {"items.colour": query.colour}
-            )
-            // .andWhere(
-            //     function () {
-            //         if(query.colour) {
-            //             this.where("item.colour", query.colour)
-            //         }
-            //     }
-            // )
-        
+            .join("users", "items.user_id", "=", "users.id")
+            .where((qb) => {
+                if (query.type) {
+                  qb.where('items.type', '=', query.type);
+                }
+            
+                if (query.colour) {
+                  qb.andWhere('items.colour', '=', query.colour);
+                }
+            
+                if (query.size) {
+                  qb.andWhere('items.size', '=', query.size);
+                }
+            })
+
             res.status(200).json(items);
     } catch (error) {
         res.status(500).json({
