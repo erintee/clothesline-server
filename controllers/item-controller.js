@@ -1,10 +1,12 @@
 const knex = require('knex')(require("../knexfile"));
+const path = require('node:path'); 
 
 const allItems = async (_req, res) => {
     try {
         const items = await knex("items")
             .select(
                 "items.type",
+                "items.id",
                 "items.colour",
                 "items.size",
                 "items.image",
@@ -18,11 +20,13 @@ const allItems = async (_req, res) => {
     }
 }
 
+
 const postItem = async (req, res) => {
     console.log(req.body)
 
-    const { type, colour, size, filename } = req.body;
+    const { type, colour, size } = req.body;
     const userId = "599e382f-dfec-469a-8ff5-342f5b2767b1"
+    
     if (!type || !colour || !size ) {
         return res.status(400).json({
             message: "Missing form input data"
@@ -35,7 +39,7 @@ const postItem = async (req, res) => {
                 type,
                 colour,
                 size,
-                "image": image,
+                "image": req.file.filename,
                 "user_id": userId,
             })
         
@@ -51,9 +55,8 @@ const postItem = async (req, res) => {
             message: `Unable to add new item: ${error}`,
         });
     }
-    // res.send(req.body);
-
 }
+
 
 module.exports = {
     allItems,

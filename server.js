@@ -10,7 +10,7 @@ const itemRouter = require('./routes/item-routes');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('/uploads'));
+app.use(express.static('public'));
 
 app.use('/api/items', itemRouter);
 // app.use('/api/users', userRouter);
