@@ -15,8 +15,6 @@ exports.up = function(knex) {
                 .onDelete("CASCADE")
                 .defaultTo(knex.raw("(UUID())"));
             table.string("status").notNullable();
-            table.timestamp("requested_at").defaultTo(knex.fn.now());
-            table.timestamp("updated_at").defaultTo(knex.fn.now());
         });
 };
 

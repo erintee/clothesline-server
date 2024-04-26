@@ -9,10 +9,11 @@ exports.up = function(knex) {
                 .onUpdate("CASCADE")
                 .onDelete("CASCADE")
                 .defaultTo(knex.raw("(UUID())"));
+            table.string("title").notNullable();
             table.string("type").notNullable();
             table.string("colour").notNullable();
             table.string("size").notNullable();
-            table.timestamp("created_at").defaultTo(knex.fn.now());
+            table.string("image");
         })
 };
 
