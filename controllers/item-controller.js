@@ -57,8 +57,46 @@ const postItem = async (req, res) => {
     }
 }
 
+const searchItems = async (req, res) => {
+    try {
+        const query = req.query;
+        console.log(query)
+        console.log(query.type)
+        console.log(typeof query.type)
+        const items = await knex("items")
+            .select(
+                "items.type",
+                "items.id",
+                "items.colour",
+                "items.size",
+                "items.image",
+                // "users.name",
+            )
+            .where(
+                {"items.type": query.type}
+            )
+            .orWhere(
+                {"items.colour": query.colour}
+            )
+            // .andWhere(
+            //     function () {
+            //         if(query.colour) {
+            //             this.where("item.colour", query.colour)
+            //         }
+            //     }
+            // )
+        
+            res.status(200).json(items);
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to fetch search results"
+        })
+    }
+}
+
 
 module.exports = {
     allItems,
     postItem,
+    searchItems,
 }
