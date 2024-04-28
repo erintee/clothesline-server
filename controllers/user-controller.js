@@ -1,5 +1,22 @@
 const knex = require("knex")(require("../knexfile"));
 
+const getUser = async (req, res) => {
+    console.log(req);
+    try {
+        const user = await knex("users")
+            .select(
+                "first_name",
+                "last_name"
+            )
+            .where({ id: req.params.userId })
+            .first();
+
+            res.status(200).json(user);
+    } catch (error) {
+        res.status(400).send("User not found");
+    }
+}
+
 const userItems = async (req, res) => {
     try {
         const items = await knex("items")
@@ -30,5 +47,6 @@ const userItems = async (req, res) => {
 }
 
 module.exports = {
+    getUser,
     userItems,
 }

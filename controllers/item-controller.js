@@ -7,6 +7,7 @@ const allItems = async (_req, res) => {
             .select(
                 "items.type",
                 "items.id",
+                "items.title",
                 "items.colour",
                 "items.size",
                 "items.image",
@@ -19,7 +20,6 @@ const allItems = async (_req, res) => {
         res.status(500).send(`Error retrieving items: ${error}`);
     }
 }
-
 
 const postItem = async (req, res) => {
     console.log(req.body)
@@ -65,6 +65,7 @@ const searchItems = async (req, res) => {
             .select(
                 "items.type",
                 "items.id",
+                "items.title",
                 "items.colour",
                 "items.size",
                 "items.image",
