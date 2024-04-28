@@ -1,29 +1,27 @@
 const knex = require('knex')(require("../knexfile"));
 const path = require('node:path'); 
 
-const allItems = async (_req, res) => {
-    try {
-        const items = await knex("items")
-            .select(
-                "items.type",
-                "items.id",
-                "items.title",
-                "items.colour",
-                "items.size",
-                "items.image",
-                "users.first_name"            
-            )
-            .join("users", "items.user_id", "=", "users.id");
+// const allItems = async (_req, res) => {
+//     try {
+//         const items = await knex("items")
+//             .select(
+//                 "items.type",
+//                 "items.id",
+//                 "items.title",
+//                 "items.colour",
+//                 "items.size",
+//                 "items.image",
+//                 "users.first_name"            
+//             )
+//             .join("users", "items.user_id", "=", "users.id");
 
-        res.status(200).json(items);
-    } catch (error) {
-        res.status(500).send(`Error retrieving items: ${error}`);
-    }
-}
+//         res.status(200).json(items);
+//     } catch (error) {
+//         res.status(500).send(`Error retrieving items: ${error}`);
+//     }
+// }
 
 const postItem = async (req, res) => {
-    console.log(req.body)
-
     const { type, colour, size } = req.body;
     const userId = "599e382f-dfec-469a-8ff5-342f5b2767b1"
     
@@ -60,7 +58,6 @@ const postItem = async (req, res) => {
 const searchItems = async (req, res) => {
     try {
         const query = req.query;
-        console.log(query)
         const items = await knex("items")
             .select(
                 "items.type",
@@ -96,7 +93,7 @@ const searchItems = async (req, res) => {
 
 
 module.exports = {
-    allItems,
+    // allItems,
     postItem,
     searchItems,
 }
