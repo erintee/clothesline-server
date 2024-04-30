@@ -1,7 +1,5 @@
 require('dotenv').config();
 const cors = require('cors');
-const jwt = require("jsonwebtoken");
-// const multer = require('multer');
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080;
