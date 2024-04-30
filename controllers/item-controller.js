@@ -1,5 +1,5 @@
 const knex = require('knex')(require("../knexfile"));
-const path = require('node:path'); 
+// const path = require('node:path'); 
 
 // const allItems = async (_req, res) => {
 //     try {

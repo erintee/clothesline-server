@@ -3,7 +3,7 @@ exports.seed = async function(knex) {
   await knex('items').del()
   await knex('items').insert([
     {
-      user_id: "599e382f-dfec-469a-8ff5-342f5b2767b1",
+      user_id: 1,
       title: "Sleeveless black dress",
       type: "dress",
       colour: "black",
@@ -11,7 +11,7 @@ exports.seed = async function(knex) {
       image: "black-dress.png"
     },
     {
-      user_id: "599e382f-dfec-469a-8ff5-342f5b2767b1",
+      user_id: 1,
       title: "Simple heels",
       type: "shoes",
       colour: "black",
@@ -19,7 +19,7 @@ exports.seed = async function(knex) {
       image: "black-shoes.png"
     },
     {
-      user_id: "e6272fe0-94ef-416e-bc6c-be38317754f8",
+      user_id: 2,
       title: "Winter boots",
       type: "shoes",
       colour: "brown",
@@ -27,7 +27,7 @@ exports.seed = async function(knex) {
       image: "boots.jpg"
     },
     {
-      user_id: "5cc3463f-42fc-44b2-86b8-33016eacfa5d",
+      user_id: 3,
       title: "Light green slip dress",
       type: "dress",
       colour: "green",
@@ -35,7 +35,7 @@ exports.seed = async function(knex) {
       image: "green-dress.png"
     },
     {
-      user_id: "5cc3463f-42fc-44b2-86b8-33016eacfa5d",
+      user_id: 3,
       title: "Long wool dresscoat",
       type: "outerwear",
       colour: "brown",
@@ -43,7 +43,7 @@ exports.seed = async function(knex) {
       image: "wool-coat.png"
     },
     {
-      user_id: "78397302-5c72-42e4-a0f4-0337433cb5c7",
+      user_id: 4,
       title: "White lace blouse",
       type: "top",
       colour: "white",
@@ -51,7 +51,7 @@ exports.seed = async function(knex) {
       image: "blouse.png"
     },
     {
-      user_id: "c1e22735-e900-41a2-af95-4fcf4dfd3225",
+      user_id: 5,
       title: "Turquoise and pink sari",
       type: "dress",
       colour: "blue",
@@ -59,7 +59,7 @@ exports.seed = async function(knex) {
       image: "sari.jpg"
     },
     {
-      user_id: "c1e22735-e900-41a2-af95-4fcf4dfd3225",
+      user_id: 5,
       title: "Gold ring necklace",
       type: "jewellery",
       colour: "necklace",
