@@ -56,20 +56,22 @@ const login = async (req, res) => {
         }
 
         const isPasswordMatch = user.password === password;
+        
         if (!isPasswordMatch) {
             return res.status(401).json({
-                message: "Email or password is incorrect",
+                message: "Incorrect password",
             })
         }
 
-        const token = jwt.sign({
-            id: user.id,
-            email: user.email,
-        }, SECRET_KEY)
-
-        res.status(200).json({
-            access_token: token,
-        })
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                name: user.first_name,
+            }, 
+            SECRET_KEY
+        )
+        res.status(200).send(token);
     } catch (error) {
         res.status(500).json({
             message: `Unable to login: ${error}`
@@ -79,5 +81,5 @@ const login = async (req, res) => {
 
 module.exports = {
     register,
-    login
+    login,
 }
