@@ -1,63 +1,6 @@
 const knex = require('knex')(require("../knexfile"));
-// const path = require('node:path'); 
 
-// const allItems = async (_req, res) => {
-//     try {
-//         const items = await knex("items")
-//             .select(
-//                 "items.type",
-//                 "items.id",
-//                 "items.title",
-//                 "items.colour",
-//                 "items.size",
-//                 "items.image",
-//                 "users.first_name"            
-//             )
-//             .join("users", "items.user_id", "=", "users.id");
-
-//         res.status(200).json(items);
-//     } catch (error) {
-//         res.status(500).send(`Error retrieving items: ${error}`);
-//     }
-// }
-
-const postItem = async (req, res) => {
-    const { type, colour, size } = req.body;
-    const user = await knex("users")
-    .where({ id: req.payload.id })
-    .first();
-
-    if (!type || !colour || !size ) {
-        return res.status(400).json({
-            message: "Missing form input data"
-        });
-    }
-
-    try {
-        const result = await knex("items")
-            .insert({
-                type,
-                colour,
-                size,
-                "image": req.file.filename,
-                "user_id": user.id,
-            })
-        
-        const [id] = result;
-
-        const newItem = await knex("items")
-            .where({ id })
-            .first();
-        
-        res.status(201).json(newItem);
-    } catch (error) {
-        res.status(500).json({
-            message: `Unable to add new item: ${error}`,
-        });
-    }
-}
-
-const searchItems = async (req, res) => {
+const getItems = async (req, res) => {
     try {
         const query = req.query;
         const user = await knex("users")
@@ -107,9 +50,43 @@ const searchItems = async (req, res) => {
     }
 }
 
+const postItem = async (req, res) => {
+    const { type, colour, size } = req.body;
+    const user = await knex("users")
+    .where({ id: req.payload.id })
+    .first();
+
+    if (!type || !colour || !size ) {
+        return res.status(400).json({
+            message: "Missing form input data"
+        });
+    }
+
+    try {
+        const result = await knex("items")
+            .insert({
+                type,
+                colour,
+                size,
+                "image": req.file.filename,
+                "user_id": user.id,
+            })
+        
+        const [id] = result;
+
+        const newItem = await knex("items")
+            .where({ id })
+            .first();
+        
+        res.status(201).json(newItem);
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to add new item: ${error}`,
+        });
+    }
+}
 
 module.exports = {
-    // allItems,
+    getItems,
     postItem,
-    searchItems,
 }

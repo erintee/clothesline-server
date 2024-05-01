@@ -22,10 +22,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
   
 router.route("/")
-    .get(verifyToken, itemController.searchItems)
+    .get(verifyToken, itemController.getItems)
     .post(upload.single("image"), verifyToken, itemController.postItem);
-
-// router.route("/search")
-    // .get(itemController.searchItems)
 
 module.exports = router;
