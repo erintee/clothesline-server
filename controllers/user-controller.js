@@ -18,33 +18,32 @@ const getUser = async (req, res) => {
 
 const userItems = async (req, res) => {
     try {
-        const itemsUser = await knex("users")
+        const user = await knex("users")
             .select("id").where({ id: req.params.userId })
             .first();
         
-        if(!itemsUser) {
+        if(!user) {
             res.status(404).send("User not found");
         }
 
-        const accessUser = await knex("users")
-            .select("id").where({ id: req.payload.id })
-            .first();
+        // const accessUser = await knex("users")
+        //     .select("id").where({ id: req.payload.id })
+        //     .first();
         
-        const [{ status }] = await knex("friendships")
-            .select("status")
-            .where("user1_id", itemsUser.id)
-            .andWhere("user2_id", accessUser.id)
-            // .first()
-            .union(knex("friendships")
-                .select("status")
-                .where("user1_id", accessUser.id)
-                .andWhere("user2_id", itemsUser.id)
-                .first()
-            )
-            
-        if(status !== "friends") {
-            return res.status(403).send("Unauthorized")
-        }
+        // const [{ status }] = await knex("friendships")
+        //     .select("status")
+        //     .where("user1_id", itemsUser.id)
+        //     .andWhere("user2_id", accessUser.id)
+        //     .union(knex("friendships")
+        //         .select("status")
+        //         .where("user1_id", accessUser.id)
+        //         .andWhere("user2_id", itemsUser.id)
+        //     )
+        //     // .first()
+
+        // // if(status !== "friends" && itemsUser.id !== accessUser.id) {
+        // //     return res.status(403).send("Unauthorized")
+        // // }
 
         const items = await knex("items")
             .select(

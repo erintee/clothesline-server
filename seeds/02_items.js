@@ -62,8 +62,8 @@ exports.seed = async function(knex) {
       user_id: 5,
       title: "Gold ring necklace",
       type: "accessory",
-      colour: "necklace",
-      size: "OSFA",
+      colour: "gold",
+      size: "N/A",
       image: "necklace.jpg"
     },
   ]);

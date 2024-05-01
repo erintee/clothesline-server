@@ -23,6 +23,6 @@ const upload = multer({ storage: storage });
   
 router.route("/")
     .get(verifyToken, itemController.getItems)
-    .post(upload.single("image"), verifyToken, itemController.postItem);
+    .post(upload.single("image"), itemController.postItem);
 
 module.exports = router;

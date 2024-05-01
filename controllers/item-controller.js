@@ -51,10 +51,8 @@ const getItems = async (req, res) => {
 }
 
 const postItem = async (req, res) => {
-    const { type, colour, size } = req.body;
-    const user = await knex("users")
-    .where({ id: req.payload.id })
-    .first();
+    const { user_id, title, type, colour, size } = req.body;
+    console.log(user_id, title, type, colour, size)
 
     if (!type || !colour || !size ) {
         return res.status(400).json({
@@ -63,13 +61,15 @@ const postItem = async (req, res) => {
     }
 
     try {
+        console.log("adding to DB")
         const result = await knex("items")
             .insert({
+                user_id,
+                title,
                 type,
                 colour,
                 size,
                 "image": req.file.filename,
-                "user_id": user.id,
             })
         
         const [id] = result;
