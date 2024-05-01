@@ -1,7 +1,6 @@
 const knex = require("knex")(require("../knexfile"));
 
 const getUser = async (req, res) => {
-    console.log(req);
     try {
         const user = await knex("users")
             .select(
@@ -19,6 +18,34 @@ const getUser = async (req, res) => {
 
 const userItems = async (req, res) => {
     try {
+        const itemsUser = await knex("users")
+            .select("id").where({ id: req.params.userId })
+            .first();
+        
+        if(!itemsUser) {
+            res.status(404).send("User not found");
+        }
+
+        const accessUser = await knex("users")
+            .select("id").where({ id: req.payload.id })
+            .first();
+        
+        const [{ status }] = await knex("friendships")
+            .select("status")
+            .where("user1_id", itemsUser.id)
+            .andWhere("user2_id", accessUser.id)
+            // .first()
+            .union(knex("friendships")
+                .select("status")
+                .where("user1_id", accessUser.id)
+                .andWhere("user2_id", itemsUser.id)
+                .first()
+            )
+            
+        if(status !== "friends") {
+            return res.status(403).send("Unauthorized")
+        }
+
         const items = await knex("items")
             .select(
                 "id",
@@ -30,13 +57,6 @@ const userItems = async (req, res) => {
             )
             .where({ user_id: req.params.userId });
 
-        const user = await knex("users")
-            .select("id").where({ id: req.params.userId })
-            .first();
-        
-        if(!user) {
-            res.status(404).send("User not found");
-        }
 
         res.status(200).json(items);
     } catch (error) {
