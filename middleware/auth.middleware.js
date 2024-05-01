@@ -15,9 +15,7 @@ const verifyToken = (req, res, next) => {
     }
 
     try {
-        const payload = jwt.verify(token, SECRET_KEY);
-        console.log(payload);
-        
+        const payload = jwt.verify(token, SECRET_KEY);        
         req.payload = payload;
         next();
     } catch (error) {
