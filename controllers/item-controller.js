@@ -23,8 +23,10 @@ const knex = require('knex')(require("../knexfile"));
 
 const postItem = async (req, res) => {
     const { type, colour, size } = req.body;
-    const userId = "599e382f-dfec-469a-8ff5-342f5b2767b1"
-    
+    const user = await knex("users")
+    .where({ id: req.payload.id })
+    .first();
+
     if (!type || !colour || !size ) {
         return res.status(400).json({
             message: "Missing form input data"
@@ -38,7 +40,7 @@ const postItem = async (req, res) => {
                 colour,
                 size,
                 "image": req.file.filename,
-                "user_id": userId,
+                "user_id": user.id,
             })
         
         const [id] = result;
@@ -58,6 +60,10 @@ const postItem = async (req, res) => {
 const searchItems = async (req, res) => {
     try {
         const query = req.query;
+        const user = await knex("users")
+            .where({ id: req.payload.id })
+            .first();
+
         const items = await knex("items")
             .select(
                 "items.type",
@@ -69,6 +75,16 @@ const searchItems = async (req, res) => {
                 "users.first_name",
             )
             .join("users", "items.user_id", "=", "users.id")
+            .whereIn(
+                "user_id", 
+                knex("friendships")
+                    .select("user2_id")
+                    .where("user1_id", user.id)
+                    .union(knex("friendships")
+                        .select("user1_id")
+                        .where("user2_id", user.id)
+                    )
+            )
             .where((qb) => {
                 if (query.type) {
                   qb.where('items.type', '=', query.type);

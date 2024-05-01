@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const itemController = require('../controllers/item-controller');
-
+const { verifyToken } = require('../middleware/auth.middleware');
 const path = require("path");
 const multer = require("multer");
 
@@ -22,9 +22,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
   
 router.route("/")
-    .get(itemController.searchItems)
-    // move this to users!
-    .post(upload.single("image"), itemController.postItem);
+    .get(verifyToken, itemController.searchItems)
+    .post(upload.single("image"), verifyToken, itemController.postItem);
 
 // router.route("/search")
     // .get(itemController.searchItems)

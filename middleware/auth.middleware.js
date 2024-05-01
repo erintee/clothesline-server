@@ -8,7 +8,6 @@ const verifyToken = (req, res, next) => {
         return res.status(401)
     }
     const token = authorization.split(' ')[1];
-    console.log(token)
     
     if (!token) {
         return res.sendStatus(401);

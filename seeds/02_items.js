@@ -45,7 +45,7 @@ exports.seed = async function(knex) {
     {
       user_id: 4,
       title: "White lace blouse",
-      type: "top",
+      type: "shirt",
       colour: "white",
       size: "XS/2/25",
       image: "blouse.png"
@@ -61,7 +61,7 @@ exports.seed = async function(knex) {
     {
       user_id: 5,
       title: "Gold ring necklace",
-      type: "jewellery",
+      type: "accessory",
       colour: "necklace",
       size: "OSFA",
       image: "necklace.jpg"
