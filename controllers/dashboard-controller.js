@@ -5,9 +5,7 @@ const getDashboard = async (req, res) => {
         const user = await knex("users")
             .where({ id: req.payload.id })
             .first();
-        
-            console.log("profile: ", user)
-    
+            
             res.status(200).json({
                 firstName: user.first_name,
                 email: user.email,

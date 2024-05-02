@@ -65,54 +65,7 @@ const userItems = async (req, res) => {
     }
 }
 
-const getRequests = async (req, res) => {
-    const userId = req.params.userId;
-    console.log(typeof req.payload.id)
-
-    if (Number(userId) !== req.payload.id) {
-        console.log("Unauthorized request")
-    }
-
-    try {
-        const incomingRequests = await knex("requests")
-            .select(
-                "requests.item_id",
-                "items.title",
-                "items.image",
-                "users.first_name",
-            )
-            .join("items", "requests.item_id", "=", "items.id")
-            .join("users", "requests.user1_id", "=", "users.id")
-            .where("user2_id", userId)
-            .andWhere("status", "requested")
-
-        const outgoingRequests = await knex("requests")
-            .select(
-                "requests.item_id",
-                "items.title",
-                "items.image",
-                "users.first_name",
-            )
-            .join("items", "requests.item_id", "=", "items.id")
-            .join("users", "requests.user2_id", "=", "users.id")
-            .where("user1_id", userId)
-            .andWhere("status", "requested")
-        
-        const requests = {
-            "incoming": incomingRequests,
-            "outgoing": outgoingRequests,
-        }
-        
-        res.status(200).json(requests)
-    } catch (error) {
-        res.status(500).json({
-            message: "Error fetching user requests"
-        })
-    }
-}
-
 module.exports = {
     getUser,
     userItems,
-    getRequests,
 }
