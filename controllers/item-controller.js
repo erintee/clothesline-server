@@ -9,10 +9,8 @@ const getItems = async (req, res) => {
 
         const items = await knex("items")
             .select(
-                "items.type",
                 "items.id",
                 "items.title",
-                "items.colour",
                 "items.size",
                 "items.image",
                 "users.first_name",
@@ -46,6 +44,31 @@ const getItems = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: "Unable to fetch search results"
+        })
+    }
+}
+
+const itemById = async (req,res) => {
+    try {
+        const item = await knex("items")
+            .select(
+                "items.id",
+                "items.title",
+                "items.type",
+                "items.colour",
+                "items.size",
+                "items.image",
+                "items.user_id",
+                "users.first_name",
+            )
+            .join("users", "items.user_id", "=", "users.id")
+            .where("items.id", req.params.itemId)
+            .first()
+        res.status(201).json(item);
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to fetch item data"
         })
     }
 }
@@ -86,5 +109,6 @@ const postItem = async (req, res) => {
 
 module.exports = {
     getItems,
+    itemById,
     postItem,
 }

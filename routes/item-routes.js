@@ -25,4 +25,7 @@ router.route("/")
     .get(verifyToken, itemController.getItems)
     .post(upload.single("image"), itemController.postItem);
 
+router.route("/:itemId")
+    .get(itemController.itemById);
+
 module.exports = router;
