@@ -5,6 +5,6 @@ const requestsController = require("../controllers/requests-controller");
 router.route("/:userId")
     .get(verifyToken, requestsController.getRequests)
 router.route("/:itemId")
-    .post(requestsController.sendRequest)
+    .post(verifyToken, requestsController.sendRequest)
 
 module.exports = router;

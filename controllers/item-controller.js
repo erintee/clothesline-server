@@ -60,7 +60,6 @@ const postItem = async (req, res) => {
     }
 
     try {
-        console.log("adding to DB")
         const result = await knex("items")
             .insert({
                 user_id,

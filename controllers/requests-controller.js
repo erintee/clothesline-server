@@ -2,10 +2,11 @@ const knex = require("knex")(require("../knexfile"));
 
 const getRequests = async (req, res) => {
     const userId = req.params.userId;
-    console.log(typeof req.payload.id)
 
     if (Number(userId) !== req.payload.id) {
-        return res.status(403).send("Unauthorized to access request data")
+        return res.status(403).json({
+            message: "Unauthorized to access request data"
+        });
     }
 
     try {
@@ -19,7 +20,7 @@ const getRequests = async (req, res) => {
             .join("items", "requests.item_id", "=", "items.id")
             .join("users", "requests.user1_id", "=", "users.id")
             .where("user2_id", userId)
-            .andWhere("status", "requested")
+            .andWhere("status", "pending")
 
         const outgoingRequests = await knex("requests")
             .select(
@@ -31,7 +32,7 @@ const getRequests = async (req, res) => {
             .join("items", "requests.item_id", "=", "items.id")
             .join("users", "requests.user2_id", "=", "users.id")
             .where("user1_id", userId)
-            .andWhere("status", "requested")
+            .andWhere("status", "pending")
 
         const acceptedInRequests = await knex("requests")
             .select(
@@ -73,13 +74,37 @@ const getRequests = async (req, res) => {
 }
 
 const sendRequest = async (req, res) => {
-    const { item } = req.params.itemId;
+    const { itemId } = req.params;
+    const user1 = req.payload.id;
+    const { user2 } = req.body;
 
-    // get data for both users
-        // user one from token
-        // user two by getting item by id and taking the user_id
-    // insert record into requests table with two user id's and item id and "pending" as status
-    // add date of entry
+    if (!user1 || !user2 || !itemId ) {
+        return res.status(400).json({
+            message: "Missing user or item data"
+        })
+    }
+    
+    try {
+        const result = await knex("requests")
+            .insert({
+                "user1_id": user1,
+                "user2_id": user2,
+                "item_id": itemId,
+                "status": "pending"
+            })
+
+        const [ id ] = result;
+
+        const newRequest = await knex("requests")
+            .where({ id })
+            .first()
+
+        res.status(201).json(newRequest);
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to make request: ${error}`,
+        });
+    }
 }
 
 module.exports = {

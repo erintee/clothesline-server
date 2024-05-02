@@ -6,13 +6,13 @@ exports.seed = async function(knex) {
         user1_id: 1,
         user2_id: 2,
         item_id: 3,
-        status: "requested",
+        status: "pending",
       },
       {
         user1_id: 3,
         user2_id: 1,
         item_id: 1,
-        status: "requested",
+        status: "pending",
       },
       {
         user1_id: 3,
