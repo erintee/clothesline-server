@@ -52,7 +52,6 @@ const getItems = async (req, res) => {
 
 const postItem = async (req, res) => {
     const { user_id, title, type, colour, size } = req.body;
-    console.log(user_id, title, type, colour, size)
 
     if (!type || !colour || !size ) {
         return res.status(400).json({
