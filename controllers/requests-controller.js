@@ -75,9 +75,9 @@ const getRequests = async (req, res) => {
 
 const sendRequest = async (req, res) => {
     const { itemId } = req.params;
-    const user1 = req.payload.id;
-    const { user2 } = req.body;
+    const { user1, user2, message } = req.body;
 
+    console.log("received request")
     if (!user1 || !user2 || !itemId ) {
         return res.status(400).json({
             message: "Missing user or item data"
@@ -90,6 +90,7 @@ const sendRequest = async (req, res) => {
                 "user1_id": user1,
                 "user2_id": user2,
                 "item_id": itemId,
+                "message": message,
                 "status": "pending"
             })
 

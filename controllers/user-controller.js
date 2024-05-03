@@ -1,5 +1,24 @@
 const knex = require("knex")(require("../knexfile"));
 
+const getActiveUser = async (req, res) => {
+    try {
+        const user = await knex("users")
+            .where({ id: req.payload.id })
+            .first();
+            
+            res.status(200).json({
+                firstName: user.first_name,
+                lastName: user.last_name,
+                email: user.email,
+                id: user.id,
+            })
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to fetch active user data"
+        })
+    }
+};
+
 const getUser = async (req, res) => {
     try {
         const user = await knex("users")
@@ -66,6 +85,7 @@ const userItems = async (req, res) => {
 }
 
 module.exports = {
+    getActiveUser,
     getUser,
     userItems,
 }
