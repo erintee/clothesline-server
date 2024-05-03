@@ -91,7 +91,8 @@ const sendRequest = async (req, res) => {
                 "user2_id": user2,
                 "item_id": itemId,
                 "message": message,
-                "status": "pending"
+                "status": "pending",
+                "date": Date.now()
             })
 
         const [ id ] = result;

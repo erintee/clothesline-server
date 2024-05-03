@@ -15,7 +15,7 @@ exports.seed = async function(knex) {
       title: "Simple heels",
       type: "shoes",
       colour: "black",
-      size: "9/42",
+      size: "9",
       image: "black-shoes.png"
     },
     {
@@ -23,7 +23,7 @@ exports.seed = async function(knex) {
       title: "Winter boots",
       type: "shoes",
       colour: "brown",
-      size: "10/43",
+      size: "10",
       image: "boots.jpg"
     },
     {
@@ -31,7 +31,7 @@ exports.seed = async function(knex) {
       title: "Light green slip dress",
       type: "dress",
       colour: "green",
-      size: "M/6/27",
+      size: "M/6/28",
       image: "green-dress.png"
     },
     {
@@ -39,7 +39,7 @@ exports.seed = async function(knex) {
       title: "Long wool dresscoat",
       type: "outerwear",
       colour: "brown",
-      size: "M/6/27",
+      size: "M/6/28",
       image: "wool-coat.png"
     },
     {
@@ -47,7 +47,7 @@ exports.seed = async function(knex) {
       title: "White lace blouse",
       type: "shirt",
       colour: "white",
-      size: "XS/2/25",
+      size: "XS/2/26",
       image: "blouse.png"
     },
     {
@@ -55,7 +55,7 @@ exports.seed = async function(knex) {
       title: "Turquoise and pink sari",
       type: "dress",
       colour: "blue",
-      size: "M/10/30",
+      size: "L/10/30",
       image: "sari.jpg"
     },
     {

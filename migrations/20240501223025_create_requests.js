@@ -20,7 +20,9 @@ exports.up = function(knex) {
                 .references("items.id")
                 .onUpdate("CASCADE")
                 .onDelete("CASCADE")
+            table.string("message").notNullable();
             table.string("status").notNullable();
+            table.string("date").notNullable();
         });
 };
 
