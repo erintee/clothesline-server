@@ -3,8 +3,9 @@ const { verifyToken } = require("../middleware/auth.middleware");
 const requestsController = require("../controllers/requests-controller");
 
 router.route("/:userId")
-    .get(verifyToken, requestsController.getRequests)
+    .get(verifyToken, requestsController.getRequests);
+
 router.route("/:itemId")
-    .post(verifyToken, requestsController.sendRequest)
+    .post(verifyToken, requestsController.sendRequest);
 
 module.exports = router;

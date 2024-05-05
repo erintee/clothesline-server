@@ -44,37 +44,39 @@ const userItems = async (req, res) => {
         if(!user) {
             res.status(404).send("User not found");
         }
-
-        // const accessUser = await knex("users")
-        //     .select("id").where({ id: req.payload.id })
-        //     .first();
         
-        // const [{ status }] = await knex("friendships")
-        //     .select("status")
-        //     .where("user1_id", itemsUser.id)
-        //     .andWhere("user2_id", accessUser.id)
-        //     .union(knex("friendships")
-        //         .select("status")
-        //         .where("user1_id", accessUser.id)
-        //         .andWhere("user2_id", itemsUser.id)
-        //     )
-        //     // .first()
+        if(user.id !== req.payload.id) {
+            const friendship = await knex("friendships")
+            .select("id")
+            .where("user1_id", user.id)
+            .andWhere("user2_id", req.payload.id)
+            .union(knex("friendships")
+            .select("status")
+            .where("user1_id", req.payload.id)
+            .andWhere("user2_id", user.id)
+            )
+            // .first()
+            if(friendship.length === 0) {
+                console.log("no friendship entry")
+                return res.status(403).send("Unauthorized")
+            }
 
-        // // if(status !== "friends" && itemsUser.id !== accessUser.id) {
-        // //     return res.status(403).send("Unauthorized")
-        // // }
+            if(friendship.status !== "friends" && user.id !== req.payload.id) {
+            }
+        }
 
         const items = await knex("items")
-            .select(
-                "id",
-                "title",
-                "type",
-                "colour",
-                "size",
-                "image",
-            )
-            .where({ user_id: req.params.userId });
-
+        .select(
+            "id",
+            "title",
+            "type",
+            "colour",
+            "size",
+            "image",
+        )
+        .where({ user_id: req.params.userId });
+        
+        console.log(items);
 
         res.status(200).json(items);
     } catch (error) {
