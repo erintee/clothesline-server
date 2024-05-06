@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization) {
-        return res.status(401)
+        return res.status(401).send("Invalid authentication")
     }
     const token = authorization.split(' ')[1];
     
@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
-        res.status(401).send("Invalid token");
+        res.status(401).send("Invalid authentication");
     }
 }
 
