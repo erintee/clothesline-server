@@ -51,9 +51,9 @@ const userItems = async (req, res) => {
             .where("user1_id", user.id)
             .andWhere("user2_id", req.payload.id)
             .union(knex("friendships")
-            .select("status")
-            .where("user1_id", req.payload.id)
-            .andWhere("user2_id", user.id)
+                .select("status")
+                .where("user1_id", req.payload.id)
+                .andWhere("user2_id", user.id)
             )
             // .first()
             if(friendship.length === 0) {

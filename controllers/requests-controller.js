@@ -30,9 +30,36 @@ const getRequests = async (req, res) => {
             .where("user1_id", userId)
             .andWhere("status", "pending")
 
+        const pastRequests = await knex("requests")
+            .select(
+                "requests.id",
+                "requests.user1_id",
+                "items.title",
+                "items.image",
+                "users.first_name",
+            )
+            .join("items", "requests.item_id", "=", "items.id")
+            .join("users", "requests.user1_id", "=", "users.id")
+            .where("user2_id", userId)
+            .andWhereNot("status", "pending")
+            .union(knex("requests")
+                .select(
+                    "requests.id",
+                    "requests.user1_id",
+                    "items.title",
+                    "items.image",
+                    "users.first_name",
+                )
+                .join("items", "requests.item_id", "=", "items.id")
+                .join("users", "requests.user2_id", "=", "users.id")
+                .where("user1_id", userId)
+                .andWhereNot("status", "pending")
+            )
+
         const requests = {
             "incoming": incomingRequests,
             "outgoing": outgoingRequests,
+            "history": pastRequests,
         }
         
         res.status(200).json(requests)
@@ -44,7 +71,6 @@ const getRequests = async (req, res) => {
 }
 
 const requestById = async (req,res) => {
-    console.log("finding request entry")
     try {
         const request = await knex("requests")
             .select(
@@ -74,7 +100,6 @@ const sendRequest = async (req, res) => {
     const { itemId } = req.params;
     const { user1, user2, message } = req.body;
 
-    console.log("received request")
     if (!user1 || !user2 || !itemId ) {
         return res.status(400).json({
             message: "Missing user or item data"
