@@ -78,6 +78,7 @@ const requestById = async (req,res) => {
                 "requests.item_id",
                 "requests.user1_id",
                 "requests.message",
+                "requests.status",
                 "items.title",
                 "items.size",
                 "items.image",
@@ -131,8 +132,25 @@ const sendRequest = async (req, res) => {
     }
 }
 
+const cancelRequest = async (req, res) => {
+    try {
+		const request = await knex("requests")
+			.where({ id: req.params.requestId })
+			.delete();
+		
+			if (!request) {
+			return res.status(404).json({message: "Request not found"})
+		}
+
+		res.status(204).send(`Successfully deleted request: ${req.params.requestId}`)
+	} catch (error) {
+		res.status(404).send(`Error deleting request: ${error}`);
+	}
+}
+
 module.exports = {
     getRequests,
     requestById,
     sendRequest,
+    cancelRequest,
 }
