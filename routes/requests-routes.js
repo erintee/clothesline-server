@@ -11,5 +11,6 @@ router.route("/:itemId")
 router.route("/:requestId")
     .get(verifyToken, requestsController.requestById)
     .delete(verifyToken, requestsController.cancelRequest)
+    .put(verifyToken, requestsController.editRequest);
 
 module.exports = router;

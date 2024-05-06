@@ -88,6 +88,12 @@ const requestById = async (req,res) => {
             .join("users", "requests.user1_id", "=", "users.id")
             .where("requests.id", req.params.requestId)
             .first()
+
+        if (!request) {
+            return res.status(400).json({
+                message: "Invalid request id"
+            })
+        }
         res.status(201).json(request);
 
     } catch (error) {
@@ -148,9 +154,37 @@ const cancelRequest = async (req, res) => {
 	}
 }
 
+const editRequest = async (req, res) => {
+    
+
+    try {
+        const updated = await knex("requests")
+            .where({ id: req.params.requestId })
+            .update(req.body);
+
+        if (!updated) {
+            return res.status(404).json({
+                message: `Request ${request.params.requestId} not found`
+            })
+        }
+
+        const updatedRequest = await knex("requests")
+            .where({ id: req.params.requestId })
+            .first();
+
+        res.status(200).json(updatedRequest);
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Error updating request"
+        })
+    }
+}
+
 module.exports = {
     getRequests,
     requestById,
     sendRequest,
     cancelRequest,
+    editRequest,
 }
