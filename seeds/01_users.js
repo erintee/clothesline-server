@@ -3,33 +3,33 @@ exports.seed = async function(knex) {
   await knex("users").del()
   await knex("users").insert([
     {
-      first_name:"Erin",
-      last_name:"Templeton",
-      email:"erindtempleton@gmail.com",
+      first_name:"Jane",
+      last_name:"Sample",
+      email:"jane.sample@email.com",
       password:"123456"
     },
     {
-      first_name:"Sarah",
-      last_name:"Ehl",
-      email:"sarah.e@email.com",
+      first_name:"Misty",
+      last_name:"Copeland",
+      email:"m.copeland@email.com",
       password:"123456"
     },
     {
-      first_name:"Victoria",
-      last_name:"Wilcott",
-      email:"victoria@email.com",
+      first_name:"Evelyn",
+      last_name:"Buffalo-Robe",
+      email:"amelia.e@email.com",
       password:"123456"
     },
     {
-      first_name:"Kelcey",
-      last_name:"Hung",
-      email:"kelcey25@email.com",
+      first_name:"Zhenyi",
+      last_name:"Wang",
+      email:"wangzy@email.com",
       password:"123456"
     },
     {
-      first_name:"Kelsi",
-      last_name:"Wall",
-      email:"k.wall@email.com",
+      first_name:"Grace",
+      last_name:"Hopper",
+      email:"g.hopper@email.com",
       password:"123456"
     },
   ]);

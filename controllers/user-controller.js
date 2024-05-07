@@ -57,7 +57,6 @@ const userItems = async (req, res) => {
             )
             // .first()
             if(friendship.length === 0) {
-                console.log("no friendship entry")
                 return res.status(403).send("Unauthorized")
             }
 
@@ -75,8 +74,6 @@ const userItems = async (req, res) => {
             "image",
         )
         .where({ user_id: req.params.userId });
-        
-        console.log(items);
 
         res.status(200).json(items);
     } catch (error) {
