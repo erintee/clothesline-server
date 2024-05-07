@@ -13,6 +13,14 @@ const register = async (req, res) => {
     }
 
     try {
+        const check = await knex("users")
+            .where({email: email})
+            .first()
+
+        if(check) {
+            return res.status(400).send("User already exists")
+        }
+
         const result = await knex("users")
             .insert({
                 first_name,
