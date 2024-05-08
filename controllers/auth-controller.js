@@ -1,5 +1,6 @@
 const knex = require('knex')(require("../knexfile"));
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcrypt');
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
@@ -21,14 +22,16 @@ const register = async (req, res) => {
             return res.status(400).send("User already exists")
         }
 
+        const hash = await bcrypt.hash(password, 10);
+
         const result = await knex("users")
             .insert({
                 first_name,
                 last_name,
                 email,
-                password,
+                "password": hash,
             })
-        console.log(result.id)
+
         const [ id ] = result;
 
         const newUser = await knex("users")
@@ -63,7 +66,7 @@ const login = async (req, res) => {
             })
         }
 
-        const isPasswordMatch = user.password === password;
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
         
         if (!isPasswordMatch) {
             return res.status(401).json({
