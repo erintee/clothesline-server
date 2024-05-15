@@ -7,22 +7,25 @@ exports.up = function(knex) {
                 .unsigned()
                 .references("users.id")
                 .onUpdate("CASCADE")
-                .onDelete("CASCADE")
+                .onDelete("CASCADE");
             table
                 .integer("user2_id")
                 .unsigned()
                 .references("users.id")
                 .onUpdate("CASCADE")
-                .onDelete("CASCADE")
+                .onDelete("CASCADE");
             table
                 .integer("item_id")
                 .unsigned()
                 .references("items.id")
                 .onUpdate("CASCADE")
-                .onDelete("CASCADE")
-            table.string("message").notNullable();
+                .onDelete("CASCADE");
+            table.date("request_start").notNullable();
+            table.date("request_end").notNullable();
             table.string("status").notNullable();
-            table.string("date").notNullable();
+            table
+                .timestamp("created_at")
+                .defaultTo(knex.fn.now());
         });
 };
 

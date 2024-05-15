@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
     const { authorization } = req.headers;
 
     if (!authorization) {
-        return res.status(401).send("Invalid authentication")
+        return res.status(401).send("Missing authentication")
     }
     const token = authorization.split(' ')[1];
     
