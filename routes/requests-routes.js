@@ -13,4 +13,7 @@ router.route("/:requestId")
     .delete(verifyToken, requestsController.cancelRequest)
     .put(verifyToken, requestsController.editRequest);
 
+router.route("/:requestId/messages")
+    .get(verifyToken, requestsController.requestMessages);
+
 module.exports = router;

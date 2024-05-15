@@ -77,7 +77,8 @@ const requestById = async (req,res) => {
                 "requests.id",
                 "requests.item_id",
                 "requests.user1_id",
-                "requests.message",
+                "requests.request_start",
+                "requests.request_end",
                 "requests.status",
                 "items.title",
                 "items.size",
@@ -101,6 +102,38 @@ const requestById = async (req,res) => {
             message: "Unable to fetch request data"
         })
     }
+}
+
+const requestMessages = async (req,res) => {
+    try {
+        const {requestId } = req.params;
+        console.log(requestId);
+
+        const request = await knex("requests")
+            .where("requests.id", requestId)
+        console.log(request);
+
+
+        if (!request) {
+            res.status(400).json({
+                message: `No request found with id: ${requestId}`
+            })
+        }
+
+        const messages = await knex("request_messages")
+        .select(
+            "request_messages.user_id",
+            "request_messages.message",
+            "request_messages.sent_at",
+        )
+        .where("request_messages.request_id", requestId)
+        
+        res.status(201).json(messages);
+     } catch (error) {
+        res.status(500).json({
+            message: "Unable to fetch request messages"
+        })
+     }
 }
 
 const sendRequest = async (req, res) => {
@@ -184,6 +217,7 @@ const editRequest = async (req, res) => {
 module.exports = {
     getRequests,
     requestById,
+    requestMessages,
     sendRequest,
     cancelRequest,
     editRequest,
