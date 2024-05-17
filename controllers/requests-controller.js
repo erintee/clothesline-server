@@ -107,13 +107,9 @@ const requestById = async (req,res) => {
 const requestMessages = async (req,res) => {
     try {
         const {requestId } = req.params;
-        console.log(requestId);
-
         const request = await knex("requests")
-            .where("requests.id", requestId)
-        console.log(request);
-
-
+        .where("requests.id", requestId)
+        
         if (!request) {
             res.status(400).json({
                 message: `No request found with id: ${requestId}`
@@ -125,9 +121,11 @@ const requestMessages = async (req,res) => {
             "request_messages.user_id",
             "request_messages.message",
             "request_messages.sent_at",
+            "users.first_name",
         )
+        .join("users", "request_messages.user_id", "=", "users.id")
         .where("request_messages.request_id", requestId)
-        
+
         res.status(201).json(messages);
      } catch (error) {
         res.status(500).json({
