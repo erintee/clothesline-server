@@ -8,6 +8,7 @@ const getRequests = async (req, res) => {
             .select(
                 "requests.id",
                 "requests.user1_id",
+                "requests.request_start",
                 "items.title",
                 "items.image",
                 "users.first_name",
@@ -21,6 +22,7 @@ const getRequests = async (req, res) => {
             .select(
                 "requests.id",
                 "requests.user1_id",
+                "requests.request_start",
                 "items.title",
                 "items.image",
                 "users.first_name",
@@ -29,6 +31,20 @@ const getRequests = async (req, res) => {
             .join("users", "requests.user2_id", "=", "users.id")
             .where("user1_id", userId)
             .andWhere("status", "pending")
+
+        const activeRequests = await knex("requests")
+            .select(
+                "requests.id",
+                "requests.user1_id",
+                "requests.request_start",
+                "items.title",
+                "items.image",
+                "users.first_name",
+            )
+            .join("items", "requests.item_id", "=", "items.id")
+            .join("users", "requests.user2_id", "=", "users.id")
+            .where("user1_id", userId)
+            .andWhere("request_end", ">", new Date())
 
         const pastRequests = await knex("requests")
             .select(
@@ -41,7 +57,7 @@ const getRequests = async (req, res) => {
             .join("items", "requests.item_id", "=", "items.id")
             .join("users", "requests.user1_id", "=", "users.id")
             .where("user2_id", userId)
-            .andWhereNot("status", "pending")
+            .andWhere("request_end", "<", new Date())
             .union(knex("requests")
                 .select(
                     "requests.id",
@@ -53,12 +69,13 @@ const getRequests = async (req, res) => {
                 .join("items", "requests.item_id", "=", "items.id")
                 .join("users", "requests.user2_id", "=", "users.id")
                 .where("user1_id", userId)
-                .andWhereNot("status", "pending")
+                .andWhere("request_end", "<", new Date())
             )
 
         const requests = {
             "incoming": incomingRequests,
             "outgoing": outgoingRequests,
+            "active": activeRequests,
             "history": pastRequests,
         }
         
