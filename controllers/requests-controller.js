@@ -91,8 +91,8 @@ const requestById = async (req,res) => {
             .first()
 
         if (!request) {
-            return res.status(400).json({
-                message: "Invalid request id"
+            return res.status(404).json({
+                message: `No request found with id: ${requestId}`
             })
         }
         res.status(201).json(request);
@@ -104,14 +104,14 @@ const requestById = async (req,res) => {
     }
 }
 
-const requestMessages = async (req,res) => {
+const getRequestMessages = async (req,res) => {
     try {
         const {requestId } = req.params;
         const request = await knex("requests")
         .where("requests.id", requestId)
         
         if (!request) {
-            res.status(400).json({
+            return res.status(404).json({
                 message: `No request found with id: ${requestId}`
             })
         }
@@ -136,7 +136,7 @@ const requestMessages = async (req,res) => {
 
 const sendRequest = async (req, res) => {
     const { itemId } = req.params;
-    const { user1, user2, message } = req.body;
+    const { user1, user2, request_start, request_end, message } = req.body;
 
     if (!user1 || !user2 || !itemId ) {
         return res.status(400).json({
@@ -145,23 +145,84 @@ const sendRequest = async (req, res) => {
     }
     
     try {
-        const result = await knex("requests")
+        await knex.transaction(async (trx) => {
+            const requestId = await trx("requests")
+                .insert({
+                    "requests.user1_id": user1,
+                    "requests.user2_id": user2,
+                    "requests.item_id": itemId,
+                    "requests.request_start": request_start,
+                    "requests.request_end": request_end,
+                    "requests.status": "pending",
+                })
+
+            const [ id ] = requestId;
+            
+            await trx("request_messages")
+                .insert({
+                    "request_messages.request_id": id,
+                    "request_messages.user_id": user1,
+                    "request_messages.message": message,
+                })
+
+            const newRequest = await trx("requests")
+            .select(
+                "requests.id",
+                "requests.user1_id",
+                "requests.user2_id",
+                "requests.request_start",
+                "requests.request_end",
+                "requests.status",
+                "request_messages.message",
+            )
+            .join("request_messages", "requests.id", "=", "request_messages.request_id")
+            .where("requests.id", id)
+            .first()
+            
+            res.status(201).json(newRequest);
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to make request: ${error}`,
+        });
+    }
+}
+
+const sendMessage = async (req, res) => {
+    const { requestId } = req.params;
+    const { user_id, message } = req.body;
+
+    if (!user_id || !message || !requestId ) {
+        return res.status(400).json({
+            message: "Missing data"
+        })
+    }
+    
+    try {
+        const request = await knex("requests")
+            .where("id", requestId)
+            .first();
+
+        if(!request) {
+            res.status(404).json({
+                message: `Request with id ${requestId} not found.`
+            })
+        }
+
+        const result = await knex("request_messages")
             .insert({
-                "user1_id": user1,
-                "user2_id": user2,
-                "item_id": itemId,
+                "user_id": user_id,
+                "request_id": requestId,
                 "message": message,
-                "status": "pending",
-                "date": Date.now()
             })
 
         const [ id ] = result;
 
-        const newRequest = await knex("requests")
+        const newMessage = await knex("request_messages")
             .where({ id })
             .first()
 
-        res.status(201).json(newRequest);
+        res.status(201).json(newMessage);
     } catch (error) {
         res.status(500).json({
             message: `Unable to make request: ${error}`,
@@ -215,7 +276,8 @@ const editRequest = async (req, res) => {
 module.exports = {
     getRequests,
     requestById,
-    requestMessages,
+    getRequestMessages,
+    sendMessage,
     sendRequest,
     cancelRequest,
     editRequest,

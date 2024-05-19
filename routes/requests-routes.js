@@ -14,6 +14,7 @@ router.route("/:requestId")
     .put(verifyToken, requestsController.editRequest);
 
 router.route("/:requestId/messages")
-    .get(verifyToken, requestsController.requestMessages);
+    .get(verifyToken, requestsController.getRequestMessages)
+    .post(verifyToken, requestsController.sendMessage);
 
 module.exports = router;
