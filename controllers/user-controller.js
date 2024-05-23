@@ -91,19 +91,75 @@ const searchUsers = async (req, res) => {
             .select(
                 "first_name",
                 "email",
+                "id",
             )
             .where("users.email", "=", email)
             .first()
         
         if (!foundUser) {
             return res.status(404).json({
-                "message": `Unable to find user with email: ${email}.`
+                message: `Unable to find user with email: ${email}.`
             })
         }
         
         res.status(201).json(foundUser)
     } catch (error) {
-        console.error("Unable to search for user", error)
+        res.status(500).json({
+            message: "Unable to search for user"
+        })
+    }
+}
+
+const requestFriend = async (req, res) => {
+    try {
+        const id = req.params.userId;
+        const user2 =  await knex("users")
+            .where({ id })
+            .first()
+
+        const activeUser = req.payload.id;
+
+        if(!user2){
+            return res.status(404).json({
+                message: `User with id ${user2} not found.`
+            })
+        }
+
+        // Check for existing friendship or friendship request
+        // If requesting user has previously declined incoming request, they may make a new one
+        const existingFriendship = await knex("friendships")
+            .select()
+            .where({user1_id: activeUser})
+            .andWhere({user2_id: user2.id})
+            .union(knex("friendships")
+                    .select()
+                    .where({user1_id: user2.id})
+                    .andWhere({user2_id: activeUser})
+                    .andWhereNot({status: "declined"})
+            )
+
+        if(existingFriendship.length > 0) {
+            return res.status(400).json({
+                message: "Friendship record already exists"
+            })
+        }
+        const result = await knex
+            .insert({
+                user1_id: req.payload.id,
+                user2_id: user2.id,
+                status: "requested",
+            })
+            .into("friendships")
+        
+        const [requestId] = result;
+        
+        const newRequest = await knex("friendships")
+            .where({id: requestId})
+            .first()
+
+        res.status(200).json(newRequest)
+    } catch (error) {
+        res.status(500)
     }
 }
 
@@ -112,4 +168,5 @@ module.exports = {
     getUser,
     userItems,
     searchUsers,
+    requestFriend,
 }
