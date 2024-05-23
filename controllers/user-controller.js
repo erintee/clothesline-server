@@ -112,12 +112,13 @@ const searchUsers = async (req, res) => {
 
 const requestFriend = async (req, res) => {
     try {
+        const activeUser = req.payload.id;
+
+        // Check for existing user id
         const id = req.params.userId;
         const user2 =  await knex("users")
             .where({ id })
             .first()
-
-        const activeUser = req.payload.id;
 
         if(!user2){
             return res.status(404).json({
@@ -143,6 +144,8 @@ const requestFriend = async (req, res) => {
                 message: "Friendship record already exists"
             })
         }
+
+        // Insert new request
         const result = await knex
             .insert({
                 user1_id: req.payload.id,
@@ -151,8 +154,9 @@ const requestFriend = async (req, res) => {
             })
             .into("friendships")
         
-        const [requestId] = result;
         
+        // Fetch newly-created request
+        const [requestId] = result;
         const newRequest = await knex("friendships")
             .where({id: requestId})
             .first()
