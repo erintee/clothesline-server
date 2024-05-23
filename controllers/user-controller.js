@@ -55,7 +55,6 @@ const userItems = async (req, res) => {
                 .where("user1_id", req.payload.id)
                 .andWhere("user2_id", user.id)
             )
-            // .first()
             if(friendship.length === 0) {
                 return res.status(403).send("Unauthorized")
             }
@@ -83,8 +82,34 @@ const userItems = async (req, res) => {
     }
 }
 
+const searchUsers = async (req, res) => {
+    
+    const { email } = req.body;
+
+    try {
+        const foundUser = await knex("users")
+            .select(
+                "first_name",
+                "email",
+            )
+            .where("users.email", "=", email)
+            .first()
+        
+        if (!foundUser) {
+            return res.status(404).json({
+                "message": `Unable to find user with email: ${email}.`
+            })
+        }
+        
+        res.status(201).json(foundUser)
+    } catch (error) {
+        console.error("Unable to search for user", error)
+    }
+}
+
 module.exports = {
     getActiveUser,
     getUser,
     userItems,
+    searchUsers,
 }
