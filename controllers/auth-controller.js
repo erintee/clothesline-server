@@ -38,7 +38,19 @@ const register = async (req, res) => {
             .where({ id })
             .first();
 
-        res.status(201).json(newUser);
+        const token = jwt.sign(
+            {
+                id: newUser.id,
+                email: newUser.email,
+                name: newUser.first_name,
+            }, 
+            SECRET_KEY
+        )
+        
+        res.status(201).json({
+            "user": newUser, 
+            "token": token
+        });
     } catch (error) {
         res.status(500).json({
             message: `Unable to register user: ${error}`,
@@ -67,11 +79,6 @@ const login = async (req, res) => {
         }
         
         const isPasswordMatch = await bcrypt.compare(password, user.password);
-        
-        // if (user.password !== "123456") {
-        // }
-
-        // const isPasswordMatch = password === user.password;
         
         if (!isPasswordMatch) {
             return res.status(401).json({
