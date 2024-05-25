@@ -110,67 +110,9 @@ const searchUsers = async (req, res) => {
     }
 }
 
-const requestFriend = async (req, res) => {
-    try {
-        const activeUser = req.payload.id;
-
-        // Check for existing user id
-        const id = req.params.userId;
-        const user2 =  await knex("users")
-            .where({ id })
-            .first()
-
-        if(!user2){
-            return res.status(404).json({
-                message: `User with id ${user2} not found.`
-            })
-        }
-
-        // Check for existing friendship or friendship request
-        // If requesting user has previously declined incoming request, they may make a new one
-        const existingFriendship = await knex("friendships")
-            .select()
-            .where({user1_id: activeUser})
-            .andWhere({user2_id: user2.id})
-            .union(knex("friendships")
-                    .select()
-                    .where({user1_id: user2.id})
-                    .andWhere({user2_id: activeUser})
-                    .andWhereNot({status: "declined"})
-            )
-
-        if(existingFriendship.length > 0) {
-            return res.status(400).json({
-                message: "Friendship record already exists"
-            })
-        }
-
-        // Insert new request
-        const result = await knex
-            .insert({
-                user1_id: req.payload.id,
-                user2_id: user2.id,
-                status: "requested",
-            })
-            .into("friendships")
-        
-        
-        // Fetch newly-created request
-        const [requestId] = result;
-        const newRequest = await knex("friendships")
-            .where({id: requestId})
-            .first()
-
-        res.status(200).json(newRequest)
-    } catch (error) {
-        res.status(500)
-    }
-}
-
 module.exports = {
     getActiveUser,
     getUser,
     userItems,
     searchUsers,
-    requestFriend,
 }
