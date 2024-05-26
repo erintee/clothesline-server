@@ -7,7 +7,7 @@ router.route("/")
     .get(verifyToken, friendshipController.getFriendshipRequests);
 
 router.route("/:friendshipId")
-    .put(verifyToken, friendshipController.editFriendship)
-    //.delete(verifyToken, friendshipController.deleteFriend);
+    .put(verifyToken, friendshipController.respondFriendship)
+    .delete(verifyToken, friendshipController.deleteFriendship);
 
 module.exports = router;

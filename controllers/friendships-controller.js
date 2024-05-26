@@ -60,7 +60,6 @@ const requestFriend = async (req, res) => {
 const getFriendshipRequests = async (req, res) => {
     try {
         const activeUser = req.payload.id;
-        console.log(activeUser)
 
         const outgoing = await knex("friendships")
             .where("user1_id", activeUser)
@@ -89,19 +88,30 @@ const getFriendshipRequests = async (req, res) => {
     }
 }
 
-const editFriendship = async (req, res) => {
+const respondFriendship = async (req, res) => {
     try {
-        const { friendshipId } = req.params.friendshipId;
+        const { friendshipId } = req.params;
+        const activeUser = req.payload.id;
 
-        const response = await knex("friendships")
+        const request = await knex("friendships")
             .where({ id: friendshipId})
-            .update(req.body);
+            .first()
 
-        if (!response) {
-            return res.status(404).json({
-                message: `No friendship found with id ${ friendshipId}`
+        if (!request) {
+            res.status(404).json({
+                message: `No friendship request found with id: ${friendshipId}`
             })
         }
+
+        if (request.user2_id !== activeUser) {
+            res.status(401).json({
+                message: "Unauthorized"
+            })
+        }
+
+        const response = await knex("friendships")
+            .where({ id: friendshipId })
+            .update(req.body)
 
         const updatedFriendship = await knex("friendships")
             .where({ id: friendshipId })
@@ -116,8 +126,39 @@ const editFriendship = async (req, res) => {
     }
 }
 
+const deleteFriendship = async (req, res) => {
+    const { friendshipId } = req.params;
+    const activeUser = req.payload.id;
+
+    const record = await knex("friendships")
+        .where({ id: friendshipId })
+        .first();
+
+    
+    if (!record) {
+        return res.status(404).json({
+            message: `No record found with id ${friendshipId}.`
+        })
+    }
+
+    const authorized = 
+        (record.user2_id === activeUser) || 
+        (record.user1_id === activeUser && record.status !== "declined");
+
+    if (!authorized) {
+        return res.status(401).json({
+            message: "Unauthorized"
+        })
+    }
+
+    const toDelete = await knex("friendships")
+        .where({ id: friendshipId })
+        .delete()
+}
+
 module.exports = {
     requestFriend,
     getFriendshipRequests,
-    editFriendship,
+    respondFriendship,
+    deleteFriendship,
 }
