@@ -83,8 +83,7 @@ const userItems = async (req, res) => {
 }
 
 const searchUsers = async (req, res) => {
-    
-    const { email } = req.body;
+    const { email } = req.params;
 
     try {
         const foundUser = await knex("users")
@@ -93,7 +92,8 @@ const searchUsers = async (req, res) => {
                 "email",
                 "id",
             )
-            .where("users.email", "=", email)
+            .where("users.email", email)
+            .andWhereNot("id", req.payload.id)
             .first()
         
         if (!foundUser) {
@@ -102,7 +102,7 @@ const searchUsers = async (req, res) => {
             })
         }
         
-        res.status(201).json(foundUser)
+        res.status(200).json(foundUser)
     } catch (error) {
         res.status(500).json({
             message: "Unable to search for user"
