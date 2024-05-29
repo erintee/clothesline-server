@@ -21,9 +21,11 @@ const getItems = async (req, res) => {
                 knex("friendships")
                     .select("user2_id")
                     .where("user1_id", user.id)
+                    .andWhere("status", "friends")
                     .union(knex("friendships")
                         .select("user1_id")
                         .where("user2_id", user.id)
+                        .andWhere("status", "friends")
                     )
             )
             .where((qb) => {
