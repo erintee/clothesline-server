@@ -101,7 +101,24 @@ const searchUsers = async (req, res) => {
                 message: `Unable to find user with email: ${email}.`
             })
         }
+
+        const friends = await knex("friendships")
+            .select("status")
+            .where("user1_id", foundUser.id)
+            .andWhere("user2_id", req.payload.id)
+            .union(knex("friendships")
+                .select("status")
+                .where("user1_id", req.payload.id)
+                .andWhere("user2_id", foundUser.id)
+            )
+            .first()
         
+        if (friends) {
+            foundUser.status = friends;
+        } else {
+            foundUser.status = "new"
+        }
+
         res.status(200).json(foundUser)
     } catch (error) {
         res.status(500).json({
