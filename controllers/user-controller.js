@@ -47,7 +47,7 @@ const userItems = async (req, res) => {
         
         if(user.id !== req.payload.id) {
             const friendship = await knex("friendships")
-            .select("id")
+            .select("status")
             .where("user1_id", user.id)
             .andWhere("user2_id", req.payload.id)
             .union(knex("friendships")
@@ -55,8 +55,12 @@ const userItems = async (req, res) => {
                 .where("user1_id", req.payload.id)
                 .andWhere("user2_id", user.id)
             )
-            if(friendship.length === 0 || (friendship.status !== "friends" && user.id !== req.payload.id)) {
+            .first();
+            
+            if(friendship.length === 0) {
                 return res.status(403).send("Unauthorized")
+            } else if (friendship.status !== "friends") {
+                return res.status(401).send("It's this")
             }
         }
 
