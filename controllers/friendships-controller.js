@@ -62,17 +62,44 @@ const getFriendshipRequests = async (req, res) => {
         const activeUser = req.payload.id;
 
         const outgoing = await knex("friendships")
+            .select(
+                "friendships.id",
+                {user_id: "friendships.user2_id"},
+                "users.first_name",
+            )
+            .join("users", "friendships.user2_id", "=", "users.id")
             .where("user1_id", activeUser)
-            .andWhere("status", "pending")
+            .andWhere("status", "requested")
 
         const incoming = await knex("friendships")
+            .select(
+                "friendships.id",
+                {user_id: "friendships.user1_id"},
+                "users.first_name",
+            )
+            .join("users", "friendships.user1_id", "=", "users.id")
             .where("user2_id", activeUser)
-            .andWhere("status", "pending")
+            .andWhere("status", "requested")
 
         const friends = await knex("friendships")
-            .where("user1_id", activeUser)
-            .orWhere("user2_id", activeUser)
+            .select(
+                "friendships.id",
+                {user_id: "friendships.user1_id"},
+                "users.first_name",
+            )
+            .join("users", "friendships.user1_id", "=", "users.id")
+            .where("user2_id", activeUser)
             .andWhere("status", "friends")
+            .union(knex("friendships")
+                .select(
+                    "friendships.id",
+                    {user_id: "friendships.user2_id"},
+                    "users.first_name",
+                )
+                .join("users", "friendships.user2_id", "=", "users.id")
+                .where("user1_id", activeUser)
+                .andWhere("status", "friends")
+            )
 
         const friendships = {
             "outgoing": outgoing,
@@ -127,33 +154,43 @@ const respondFriendship = async (req, res) => {
 }
 
 const deleteFriendship = async (req, res) => {
-    const { friendshipId } = req.params;
-    const activeUser = req.payload.id;
+    try {
+        const { friendshipId } = req.params;
+        const activeUser = req.payload.id;
 
-    const record = await knex("friendships")
-        .where({ id: friendshipId })
-        .first();
+        const record = await knex("friendships")
+            .where({ id: friendshipId })
+            .first();
+        
+        if (!record) {
+            return res.status(404).json({
+                message: `No record found with id ${friendshipId}.`
+            })
+        };
 
+        const authorized = 
+            (record.user2_id === activeUser) || 
+            (record.user1_id === activeUser && record.status !== "declined");
+
+        if (!authorized) {
+            return res.status(401).json({
+                message: "Unauthorized"
+            })
+        };
+
+        const toDelete = await knex("friendships")
+            .where({ id: friendshipId })
+            .delete();
     
-    if (!record) {
-        return res.status(404).json({
-            message: `No record found with id ${friendshipId}.`
+        res.status(200).json({
+            message: "Friendship record successfully deleted."
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Unable to delete friendship record."
         })
     }
-
-    const authorized = 
-        (record.user2_id === activeUser) || 
-        (record.user1_id === activeUser && record.status !== "declined");
-
-    if (!authorized) {
-        return res.status(401).json({
-            message: "Unauthorized"
-        })
-    }
-
-    const toDelete = await knex("friendships")
-        .where({ id: friendshipId })
-        .delete()
 }
 
 module.exports = {
