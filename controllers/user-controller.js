@@ -55,11 +55,8 @@ const userItems = async (req, res) => {
                 .where("user1_id", req.payload.id)
                 .andWhere("user2_id", user.id)
             )
-            if(friendship.length === 0) {
+            if(friendship.length === 0 || (friendship.status !== "friends" && user.id !== req.payload.id)) {
                 return res.status(403).send("Unauthorized")
-            }
-
-            if(friendship.status !== "friends" && user.id !== req.payload.id) {
             }
         }
 
@@ -114,7 +111,7 @@ const searchUsers = async (req, res) => {
             .first()
         
         if (friends) {
-            foundUser.status = friends;
+            foundUser.status = friends.status;
         } else {
             foundUser.status = "new"
         }
