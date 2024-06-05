@@ -109,7 +109,7 @@ const requestById = async (req,res) => {
 
         if (!request) {
             return res.status(404).json({
-                message: `No request found with id: ${requestId}`
+                message: `No request found with id: ${request.id}`
             })
         }
         res.status(201).json(request);
@@ -153,7 +153,7 @@ const getRequestMessages = async (req,res) => {
 
 const sendRequest = async (req, res) => {
     const { itemId } = req.params;
-    const { user1, user2, request_start, request_end, message } = req.body;
+    const { user1, user2, requestStart, requestEnd, message } = req.body;
 
     if (!user1 || !user2 || !itemId ) {
         return res.status(400).json({
@@ -168,8 +168,8 @@ const sendRequest = async (req, res) => {
                     "requests.user1_id": user1,
                     "requests.user2_id": user2,
                     "requests.item_id": itemId,
-                    "requests.request_start": request_start,
-                    "requests.request_end": request_end,
+                    "requests.request_start": requestStart,
+                    "requests.request_end": requestEnd,
                     "requests.status": "pending",
                 })
 
@@ -207,9 +207,9 @@ const sendRequest = async (req, res) => {
 
 const sendMessage = async (req, res) => {
     const { requestId } = req.params;
-    const { user_id, message } = req.body;
+    const { userId, message } = req.body;
 
-    if (!user_id || !message || !requestId ) {
+    if (!userId || !message || !requestId ) {
         return res.status(400).json({
             message: "Missing data"
         })
@@ -228,7 +228,7 @@ const sendMessage = async (req, res) => {
 
         const result = await knex("request_messages")
             .insert({
-                "user_id": user_id,
+                "user_id": userId,
                 "request_id": requestId,
                 "message": message,
             })
