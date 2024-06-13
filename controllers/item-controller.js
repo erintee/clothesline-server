@@ -1,4 +1,5 @@
 const knex = require('knex')(require("../knexfile"));
+const fs = require('fs');
 
 const getItems = async (req, res) => {
     try {
@@ -109,8 +110,72 @@ const postItem = async (req, res) => {
     }
 }
 
+const editItem = async (req, res) => {
+    try {
+        const { itemId } = req.params;
+
+        const item = await knex("items")
+            .where({ id: itemId })
+            .first()
+
+        if (!item) {
+            return res.status(404).json({
+                message: `Item ${itemId} not found.`
+            })
+        }
+
+        if (item.user_id !== Number(req.payload.id)) {
+            return res.status(403).json({
+                message: "Unauthorized"
+            })
+        }
+
+        // If update contains new photo
+        if (req.file) {
+
+            // Delete previous image file
+            const filePath = `public/uploads/${item.image}`;
+            fs.unlink(filePath, (err) => {
+                if (err) {
+                    console.error("Error removing file:", err)
+                    return;
+                }
+            });
+
+            const { title, type, colour, size } = req.body;
+
+            await knex("items")
+                .where({ id: itemId })
+                .update({
+                    title,
+                    type,
+                    colour,
+                    size,
+                    image: req.file.filename,
+                })
+
+        } else {
+            await knex("items")
+                .where({ id: itemId })
+                .update(req.body);
+        }
+
+        const updatedItem = await knex("items")
+            .where({ id: itemId })
+            .first();
+
+        res.status(200).json(updatedItem);
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Error updating item"
+        })
+    }
+}
+
 module.exports = {
     getItems,
     itemById,
     postItem,
+    editItem,
 }

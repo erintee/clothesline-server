@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const itemController = require('../controllers/item-controller');
 const { verifyToken } = require('../middleware/auth.middleware');
-const path = require("path");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -26,6 +25,7 @@ router.route("/")
     .post(upload.single("image"), itemController.postItem);
 
 router.route("/:itemId")
-    .get(itemController.itemById);
+    .get(itemController.itemById)
+    .put(verifyToken, upload.single("image"), itemController.editItem);
 
 module.exports = router;
